@@ -1,0 +1,6 @@
+apiVersion: pod.dp.io/v1alpha1
+kind: DeepBlue
+metadata:
+  name: deepblue-sample
+spec:
+  # TODO(user): Add fields here

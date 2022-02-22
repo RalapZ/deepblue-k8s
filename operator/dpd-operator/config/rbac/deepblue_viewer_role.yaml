@@ -1,0 +1,20 @@
+# permissions for end users to view deepblues.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: deepblue-viewer-role
+rules:
+- apiGroups:
+  - pod.dp.io
+  resources:
+  - deepblues
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - pod.dp.io
+  resources:
+  - deepblues/status
+  verbs:
+  - get

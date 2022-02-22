@@ -1,0 +1,16 @@
+domain: dp.io
+layout:
+- go.kubebuilder.io/v3
+projectName: dpd-operator
+repo: dpb
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: dp.io
+  group: pod
+  kind: DeepBlue
+  path: dpb/api/v1alpha1
+  version: v1alpha1
+version: "3"

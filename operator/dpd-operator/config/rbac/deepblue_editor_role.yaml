@@ -1,0 +1,24 @@
+# permissions for end users to edit deepblues.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: deepblue-editor-role
+rules:
+- apiGroups:
+  - pod.dp.io
+  resources:
+  - deepblues
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - pod.dp.io
+  resources:
+  - deepblues/status
+  verbs:
+  - get

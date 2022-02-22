@@ -1,0 +1,8 @@
+apiVersion: pod.dp.io/v1alpha1
+kind: DeepBlue
+metadata:
+  name: deployment
+spec:
+  foo: "Deployment"
+  name: "zhurongjia"
+  book: "test"

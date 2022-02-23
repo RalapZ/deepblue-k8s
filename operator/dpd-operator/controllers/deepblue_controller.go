@@ -18,8 +18,16 @@ package controllers
 
 import (
 	"context"
+	podv1alpha1 "dpb/api/v1alpha1"
 	"dpb/controllers/deployment"
+	"github.com/go-logr/logr"
 	v1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	//corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/klog/v2"
@@ -27,44 +35,40 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	podv1alpha1 "dpb/api/v1alpha1"
-)
-
-const(
-	ERP="erp"
-	CRM="crm"
-	DLM="dlm"
 )
 
 const (
-	IsExist=iota
+	ERP = "erp"
+	CRM = "crm"
+	DLM = "dlm"
+)
+
+const (
+	IsExist = iota
 	IsUpdated
 	IsAdded
 	Error
 )
 
 var (
-
-	STATUSCODE=map[int]string{
-	IsExist:"IsExist",
-	IsUpdated:"IsUpdated",
-	IsAdded:"IsAdded",
-	Error:"error",
-}
-	BusService=map[string]string{
-		"user":ERP,
-		"login":ERP,
-		"order": CRM,
-		"member": DLM,
+	STATUSCODE = map[int]string{
+		IsExist:   "IsExist",
+		IsUpdated: "IsUpdated",
+		IsAdded:   "IsAdded",
+		Error:     "error",
 	}
+	//BusService  map[string]string
+	//	"user":   ERP,
+	//	"login":  ERP,
+	//	"order":  CRM,
+	//	"member": DLM,
+	//}
 )
-
-
 
 // DeepBlueReconciler reconciles a DeepBlue object
 type DeepBlueReconciler struct {
 	client.Client
+	Log logr.Logger
 	Scheme *runtime.Scheme
 }
 
@@ -83,8 +87,10 @@ func init() {
 //+kubebuilder:rbac:groups=pod.dp.io,resources=deepblues,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=pod.dp.io,resources=deepblues/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=pod.dp.io,resources=deepblues/finalizers,verbs=update
-//+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;delete
-//+kubebuilder:rbac:groups=core,resources=deployment,verbs=get;list;watch;create;update;delete
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=networking,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -99,8 +105,8 @@ func init() {
 
 func (r *DeepBlueReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
-
 	// TODO(user): your logic here
+
 	obj := &podv1alpha1.DeepBlue{}
 	err := r.Get(ctx, req.NamespacedName, obj)
 	if err != nil {
@@ -122,10 +128,10 @@ func (r *DeepBlueReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			if err != nil {
 				klog.Errorln(err)
 			} else {
-				respcode := CheckAndUpdateLabels(v)
+				respcode := CheckAndUpdateLabels(obj.Spec.LabelMap,v)
 				klog.Info("update deployment labels")
-				switch respcode{
-				case IsAdded,IsUpdated:
+				switch respcode {
+				case IsAdded, IsUpdated:
 					r.Update(ctx, P)
 				case IsExist:
 					continue
@@ -136,20 +142,27 @@ func (r *DeepBlueReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	return ctrl.Result{}, nil
 }
 
-func CheckAndUpdateLabels(deploy v1.Deployment) (int) {
-	if v,ok := deploy.ObjectMeta.Labels["node"];ok {
+func CheckAndUpdateLabels(BusService map[string]string,deploy v1.Deployment) int {
+	if v, ok := deploy.ObjectMeta.Labels["node"]; ok {
 		return IsExist
-	}else{
-		deploy.ObjectMeta.Labels["node"]=BusService[v]
+	} else {
+		deploy.ObjectMeta.Labels["node"] = BusService[v]
 		return IsUpdated
 	}
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *DeepBlueReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	u := &unstructured.Unstructured{}
+	u.SetGroupVersionKind(schema.GroupVersionKind{
+		Kind:    "Deployment",
+		Group:   "apps",
+		Version: "v1",
+	})
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(&source.Kind{Type: u}, &handler.EnqueueRequestForObject{}).
+		//Watches(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForObject{}).
 		For(&podv1alpha1.DeepBlue{}).
+		//Owns(&v1.Deployment{}).
 		Complete(r)
 }
-
-

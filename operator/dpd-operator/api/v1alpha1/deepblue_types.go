@@ -20,6 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
@@ -27,18 +28,18 @@ import (
 type DeepBlueSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-
 	// Foo is an example field of DeepBlue. Edit deepblue_types.go to remove/update
 	Foo  string `json:"foo,omitempty"`
 	Name string `json:"name,omitempty"`
 	Book string `json:"book,omitempty"`
+	LabelMap map[string]string `json:"labelmap,omitempty"`
 }
 
 // DeepBlueStatus defines the observed state of DeepBlue
 type DeepBlueStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	Status string `json:"status,Status,omitempty"`
+	labelStatus map[string]string `json:"labelstatus,Status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

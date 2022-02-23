@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"dpb/controllers"
 	"flag"
 	"os"
 
@@ -32,7 +33,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	podv1alpha1 "dpb/api/v1alpha1"
-	"dpb/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -66,8 +66,8 @@ func main() {
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:             scheme,
-		MetricsBindAddress: metricsAddr,
+		Scheme:                 scheme,
+		MetricsBindAddress:     metricsAddr,
 		Namespace:              "kube-system",
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
@@ -78,7 +78,7 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-	
+	//if err = (&deployment.DeploymentReconciler{
 	if err = (&controllers.DeepBlueReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),

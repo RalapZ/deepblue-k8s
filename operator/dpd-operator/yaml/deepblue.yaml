@@ -3,6 +3,8 @@ kind: DeepBlue
 metadata:
   name: deployment
 spec:
-  foo: "Deployment"
-  name: "zhurongjia"
-  book: "test"
+  labelmap:
+    user: ERP
+    login:  ERP
+    member: CRM
+    dlm: DLM

@@ -1,0 +1,34 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ralap.io.sec
+  resources:
+  - secs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ralap.io.sec
+  resources:
+  - secs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ralap.io.sec
+  resources:
+  - secs/status
+  verbs:
+  - get
+  - patch
+  - update

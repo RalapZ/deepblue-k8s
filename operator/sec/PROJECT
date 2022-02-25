@@ -1,0 +1,16 @@
+domain: sec
+layout:
+- go.kubebuilder.io/v3
+projectName: sec
+repo: sec
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: sec
+  group: ralap.io
+  kind: Sec
+  path: sec/api/v1alpha1
+  version: v1alpha1
+version: "3"

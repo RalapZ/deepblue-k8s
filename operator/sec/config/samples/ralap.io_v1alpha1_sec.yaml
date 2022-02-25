@@ -1,0 +1,6 @@
+apiVersion: ralap.io.sec/v1alpha1
+kind: Sec
+metadata:
+  name: sec-sample
+spec:
+  # TODO(user): Add fields here

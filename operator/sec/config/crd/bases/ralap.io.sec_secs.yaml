@@ -36,25 +36,13 @@ spec:
           spec:
             description: SecSpec defines the desired state of Sec
             properties:
-              labelmap:
-                additionalProperties:
-                  type: string
+              foo:
                 description: Foo is an example field of Sec. Edit sec_types.go to
                   remove/update
-                type: object
+                type: string
             type: object
           status:
             description: SecStatus defines the observed state of Sec
-            properties:
-              labelstatus:
-                additionalProperties:
-                  type: string
-                type: object
-              status:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
-                type: string
             type: object
         type: object
     served: true

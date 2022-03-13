@@ -1,0 +1,15 @@
+apiVersion: kubescheduler.config.k8s.io/v1
+kind: KubeSchedulerConfiguration
+schedulerName: deepblue-scheduler
+leaderElection:
+  resourceName: deepblue-scheduler
+plugins:
+  filter:
+    enabled:
+    - name: "DeepBlue"
+pluginConfig:
+- name: "DeepBlue"
+  args:
+    favorite_color: "#326CE5"
+    favorite_number: 7
+    thanks_to: "thockin"
